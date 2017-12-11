@@ -5,6 +5,7 @@ import Target from './portal-target'
 import { extractAttributes } from '../utils'
 
 const inBrowser = (typeof window !== 'undefined')
+const hasParentFrame = (inBrowser && window.parent)
 
 let pid = 1
 
@@ -18,7 +19,7 @@ export default {
     order: { type: Number, default: 0 },
     slim: { type: Boolean, default: false },
     tag: { type: [String], default: 'DIV' },
-    targetEl: { type: inBrowser ? [String, HTMLElement] : String },
+    targetEl: { type: inBrowser ? (hasParentFrame ? [String, HTMLElement, window.parent.HTMLElement] : [String, HTMLElement]) : String },
     to: { type: String, default: () => String(Math.round(Math.random() * 10000000)) },
   },
 
@@ -88,7 +89,7 @@ export default {
 
       if (typeof target === 'string') {
         el = document.querySelector(this.targetEl)
-      } else if (target instanceof HTMLElement) {
+      } else if (target instanceof HTMLElement || (hasParentFrame && target instanceof parent.HTMLElement)) {
         el = target
       } else {
         console.warn('[vue-portal]: value of targetEl must be of type String or HTMLElement')
