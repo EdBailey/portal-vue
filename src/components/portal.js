@@ -30,6 +30,8 @@ export default {
     if (!this.disabled) {
       this.sendUpdate()
     }
+    // Destroy doesn't fire on a page unload.
+    window.addEventListener('unload', this.$destroy)
   },
 
   updated () {
