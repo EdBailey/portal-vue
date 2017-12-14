@@ -497,6 +497,8 @@ var Portal = {
     if (!this.disabled) {
       this.sendUpdate();
     }
+
+    window.addEventListener('unload', this.$destroy);
   },
   updated: function updated() {
     if (this.disabled) {
