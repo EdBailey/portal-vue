@@ -19,7 +19,7 @@ export default {
     order: { type: Number, default: 0 },
     slim: { type: Boolean, default: false },
     tag: { type: [String], default: 'DIV' },
-    targetEl: { type: inBrowser ? (hasParentFrame ? [String, HTMLElement, window.parent.HTMLElement] : [String, HTMLElement]) : String },
+    targetEl: { /* I give up */ },
     to: { type: String, default: () => String(Math.round(Math.random() * 10000000)) },
   },
 
@@ -31,7 +31,7 @@ export default {
       this.sendUpdate()
     }
     // Destroy doesn't fire on a page unload.
-    window.addEventListener('unload', this.$destroy)
+    window.addEventListener('unload', this.destroy)
   },
 
   updated () {
@@ -43,10 +43,7 @@ export default {
   },
 
   beforeDestroy () {
-    this.clear()
-    if (this.mountedComp) {
-      this.mountedComp.$destroy()
-    }
+    this.destroy()
   },
 
   watch: {
@@ -91,11 +88,8 @@ export default {
 
       if (typeof target === 'string') {
         el = document.querySelector(this.targetEl)
-      } else if (target instanceof HTMLElement || (hasParentFrame && target instanceof parent.HTMLElement)) {
-        el = target
       } else {
-        console.warn('[vue-portal]: value of targetEl must be of type String or HTMLElement')
-        return
+        el = target
       }
 
       const attributes = extractAttributes(el)
@@ -114,6 +108,13 @@ export default {
         this.mountedComp = target
       } else {
         console.warn('[vue-portal]: The specified targetEl ' + this.targetEl + ' was not found')
+      }
+    },
+    destroy () {
+      console.log('Destroying')
+      this.clear()
+      if (this.mountedComp) {
+        this.mountedComp.$destroy()
       }
     },
   },
